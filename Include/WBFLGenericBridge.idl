@@ -327,15 +327,6 @@ library WBFLGenericBridge
       ptExpansion
    } PierType;
 
-   typedef [public,helpstring("enum PierLayoutType"),uuid(94D90B85-0CE9-4193-8259-D7DA6EEA3AD2)]
-   enum
-   {
-      pltCommon,
-      pltHammerhead,
-      pltHaunched,
-	  pltCustom
-   } PierLayoutType;
-
    typedef [public,helpstring("enum CurbLineMeasurementType"),uuid(CC8AAA13-06C0-4bcc-9183-2EF8B145EB65)]
    enum
    {
