@@ -322,12 +322,20 @@ BOOL CEAFApp::InitInstance()
    m_pMainWnd->SetWindowPos(&CWnd::wndTop, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOREDRAW);
    m_pMainWnd->UpdateWindow();
 
-   if ( 0 < cmdInfo.m_nParams && cmdInfo.m_bCommandLineMode )
+   if ( 0 < cmdInfo.m_nParams && cmdInfo.m_bCommandLineMode)
    {
+      // running in command line mode, without UI
       ProcessCommandLineOptions(cmdInfo);
    }
    else
    {
+      if (0 < cmdInfo.m_nParams && cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen)
+      {
+         // there are command parameters, and it's a file name.
+         // process the file name so it opens the file
+         ProcessCommandLineOptions(cmdInfo);
+      }
+      
       LoadDocumentationMap();
 
       if (!IsFirstRun() && (IsTipOfTheDayEnabled() && !cmdInfo.m_bCommandLineMode))
