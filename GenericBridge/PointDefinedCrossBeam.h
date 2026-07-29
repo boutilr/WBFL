@@ -23,7 +23,7 @@
 // Bridge_Support@wsdot.wa.gov
 ///////////////////////////////////////////////////////////////////////
 
-// BasicCrossBeam.h : Declaration of the CBasicCrossBeam
+// PointDefinedCrossBeam.h : Declaration of the CPointDefinedCrossBeam
 
 #pragma once
 
@@ -31,17 +31,17 @@
 #include "ColumnLayout.h"
 
 /////////////////////////////////////////////////////////////////////////////
-// CBasicCrossBeam
-class ATL_NO_VTABLE CBasicCrossBeam : 
+// CPointDefinedCrossBeam
+class ATL_NO_VTABLE CPointDefinedCrossBeam : 
 	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CBasicCrossBeam, &CLSID_BasicCrossBeam>,
+	public CComCoClass<CPointDefinedCrossBeam, &CLSID_PointDefinedCrossBeam>,
 	public ISupportErrorInfo,
-	public IBasicCrossBeam,
+	public IPointDefinedCrossBeam,
    public IStructuredStorage2,
-   public IObjectSafetyImpl<CBasicCrossBeam,INTERFACESAFE_FOR_UNTRUSTED_CALLER | INTERFACESAFE_FOR_UNTRUSTED_DATA>
+   public IObjectSafetyImpl<CPointDefinedCrossBeam,INTERFACESAFE_FOR_UNTRUSTED_CALLER | INTERFACESAFE_FOR_UNTRUSTED_DATA>
 {
 public:
-	CBasicCrossBeam()
+	CPointDefinedCrossBeam()
 	{
       m_bIsLXBDirty = true;
       m_bIsUXBDirty = true;
@@ -53,14 +53,14 @@ public:
 
    void Invalidate();
 
-DECLARE_REGISTRY_RESOURCEID(IDR_BASICCROSSBEAM)
+DECLARE_REGISTRY_RESOURCEID(IDR_POINTDEFINEDCROSSBEAM)
 
 DECLARE_PROTECT_FINAL_CONSTRUCT()
 
-BEGIN_COM_MAP(CBasicCrossBeam)
+BEGIN_COM_MAP(CPointDefinedCrossBeam)
 	COM_INTERFACE_ENTRY(ICrossBeam)
 	COM_INTERFACE_ENTRY(ILinearCrossBeam)
-   COM_INTERFACE_ENTRY(IBasicCrossBeam)
+   COM_INTERFACE_ENTRY(IPointDefinedCrossBeam)
 	COM_INTERFACE_ENTRY(IStructuredStorage2)
    COM_INTERFACE_ENTRY(ISupportErrorInfo)
    COM_INTERFACE_ENTRY(IObjectSafety)
@@ -68,9 +68,10 @@ END_COM_MAP()
 
 private:
    IPier* m_pPier; // weak reference
-   Float64 m_H1L, m_H1R, m_H2L, m_H2R, m_HU;
-   Float64 m_X1L, m_X1R, m_X2L, m_X2R;
+   Float64 m_H1L, m_H1R, m_HU;
+   Float64 m_X1L, m_X1R;
    Float64 m_W1, m_W2;
+   CComPtr<IPoint2dCollection> m_PierPoints;
    CComPtr<IRebarLayout> m_RebarLayout;
 
    bool m_bIsLXBDirty;
@@ -103,25 +104,17 @@ public:
    STDMETHOD(get_RebarLayout)(/*[out,retval]*/IRebarLayout** ppRebarLayout) override;
    STDMETHOD(putref_RebarLayout)(/*[in]*/IRebarLayout* pRebarLayout) override;
 
-// IBasicCrossBeam
+// IPointDefinedCrossBeam
 public:
    STDMETHOD(put_H1L)(/*[in]*/Float64 H1L) override;
    STDMETHOD(get_H1L)(/*[out,retval]*/Float64* pH1L) override;
    STDMETHOD(put_H1R)(/*[in]*/Float64 H1R) override;
    STDMETHOD(get_H1R)(/*[out,retval]*/Float64* pH1R) override;
-   STDMETHOD(put_H2L)(/*[in]*/Float64 H2L) override;
-   STDMETHOD(get_H2L)(/*[out,retval]*/Float64* pH2L) override;
-   STDMETHOD(put_H2R)(/*[in]*/Float64 H2R) override;
-   STDMETHOD(get_H2R)(/*[out,retval]*/Float64* pH2R) override;
 
    STDMETHOD(put_X1L)(/*[in]*/Float64 X1L) override;
    STDMETHOD(get_X1L)(/*[out,retval]*/Float64* pX1L) override;
    STDMETHOD(put_X1R)(/*[in]*/Float64 X1R) override;
    STDMETHOD(get_X1R)(/*[out,retval]*/Float64* pX1R) override;
-   STDMETHOD(put_X2L)(/*[in]*/Float64 X2L) override;
-   STDMETHOD(get_X2L)(/*[out,retval]*/Float64* pX2L) override;
-   STDMETHOD(put_X2R)(/*[in]*/Float64 X2R) override;
-   STDMETHOD(get_X2R)(/*[out,retval]*/Float64* pX2R) override;
 
    STDMETHOD(put_HU)(/*[in]*/Float64 HU) override;
    STDMETHOD(get_HU)(/*[out,retval]*/Float64* pHU) override;
@@ -130,6 +123,8 @@ public:
    STDMETHOD(get_W1)(/*[out,retval]*/Float64* pW1) override;
    STDMETHOD(put_W2)(/*[in]*/Float64 W2) override;
    STDMETHOD(get_W2)(/*[out,retval]*/Float64* pW2) override;
+
+   STDMETHOD(SetPoints)(/*[in]*/IPoint2dCollection* pPoints) override;
 
 // IStructuredStorage2
 public:
