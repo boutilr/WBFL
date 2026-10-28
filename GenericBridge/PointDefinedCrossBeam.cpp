@@ -79,6 +79,7 @@ STDMETHODIMP CPointDefinedCrossBeam::InterfaceSupportsErrorInfo(REFIID riid)
 	{
 		&IID_ICrossBeam,
       &IID_IPointDefinedCrossBeam,
+      &IID_IPointDefinedCrossBeam2,
       &IID_IStructuredStorage2,
 	};
 	for (int i = 0; i < sizeof(arr) / sizeof(arr[0]); i++)
@@ -179,6 +180,24 @@ STDMETHODIMP CPointDefinedCrossBeam::get_Depth(/*[in]*/StageIndexType stageIdx,/
 
    Float64 Y1 = fnTop.Evaluate(Xxb);
    Float64 Y2 = fnBottom.Evaluate(Xxb);
+   // Evaluate circular transitions analytically at section cuts.
+   for (IndexType idx = 0; idx < m_Transitions.size(); ++idx)
+   {
+      if (m_Transitions[idx].Type == cbtStraight)
+         continue;
+      CComPtr<IPoint2d> first, second;
+      m_PierPoints->get_Item(idx, &first);
+      m_PierPoints->get_Item(idx + 1, &second);
+      Float64 x0, x1;
+      first->get_X(&x0);
+      second->get_X(&x1);
+      const Float64 x = Xxb + Xoffset;
+      if (x0 <= x && x <= x1)
+      {
+         Y2 = m_Transitions[idx].Arc.Evaluate(x);
+         break;
+      }
+   }
 
    Float64 H = Y1 - Y2; // depth of the lower cross beam
    *pDepth = H;
@@ -549,12 +568,71 @@ STDMETHODIMP CPointDefinedCrossBeam::get_W2(/*[out,retval]*/Float64* pW2)
 
 STDMETHODIMP CPointDefinedCrossBeam::SetPoints(IPoint2dCollection* pPoints)
 {
-    m_PierPoints.Release();
-    if (pPoints)
-    {
-        m_PierPoints = pPoints;
-    }
+    CHECK_IN(pPoints);
+    CComPtr<IPoint2dCollection> points;
+    HRESULT hr = pPoints->Clone(&points);
+    if (FAILED(hr)) return hr;
+    m_PierPoints = points;
+    IndexType count;
+    points->get_Count(&count);
+    m_Transitions.assign(count > 0 ? count - 1 : 0, TransitionData());
+    Invalidate();
     return S_OK;
+}
+
+STDMETHODIMP CPointDefinedCrossBeam::SetTransition(IndexType pointIdx, CrossBeamTransition transition, Float64 radius)
+{
+   if (pointIdx >= m_Transitions.size() || transition < cbtStraight || transition > cbtArcDownward)
+      return E_INVALIDARG;
+   TransitionData data;
+   data.Type = transition;
+   if (transition != cbtStraight)
+   {
+      if (!m_pPier) return E_UNEXPECTED;
+      CComPtr<IPoint2d> first, second;
+      m_PierPoints->get_Item(pointIdx, &first);
+      m_PierPoints->get_Item(pointIdx + 1, &second);
+      Float64 x0, y0, x1, y1;
+      first->Location(&x0, &y0);
+      second->Location(&x1, &y1);
+      if (!data.Arc.Initialize(x0, y0, x1, y1, radius, transition == cbtArcUpward))
+         return E_INVALIDARG;
+      // A valid bottom profile must remain below every intersected top-profile segment.
+      CComPtr<IPoint2dCollection> top;
+      GetLowerXBeamProfile(&top);
+      IndexType count;
+      top->get_Count(&count);
+      for (IndexType idx = 0; idx + 1 < count; ++idx)
+      {
+         CComPtr<IPoint2d> a, b;
+         top->get_Item(idx, &a);
+         top->get_Item(idx + 1, &b);
+         Float64 ax, ay, bx, by;
+         a->Location(&ax, &ay);
+         b->Location(&bx, &by);
+         const Float64 left = (std::max)(x0, ax), right = (std::min)(x1, bx);
+         if (left < right && bx > ax)
+         {
+            const Float64 slope = (by - ay) / (bx - ax);
+            if (!data.Arc.IsBelowLine(left, ay + slope * (left - ax), right, ay + slope * (right - ax)))
+               return E_INVALIDARG;
+         }
+      }
+      data.Radius = radius;
+   }
+   m_Transitions[pointIdx] = data;
+   Invalidate();
+   return S_OK;
+}
+
+STDMETHODIMP CPointDefinedCrossBeam::GetTransition(IndexType pointIdx, CrossBeamTransition* transition, Float64* radius)
+{
+   CHECK_RETVAL(transition);
+   CHECK_RETVAL(radius);
+   if (pointIdx >= m_Transitions.size()) return E_INVALIDARG;
+   *transition = m_Transitions[pointIdx].Type;
+   *radius = m_Transitions[pointIdx].Radius;
+   return S_OK;
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -815,6 +893,20 @@ HRESULT CPointDefinedCrossBeam::GetBottomXBeamProfile(IPoint2dCollection** ppPoi
           CComPtr<IPoint2d> xbPoint;
 		  m_PierPoints->get_Item(idx, &xbPoint);
           m_BXBProfile->Add(xbPoint);
+          if (idx < m_Transitions.size() && m_Transitions[idx].Type != cbtStraight)
+          {
+             const auto& arc = m_Transitions[idx].Arc;
+             const int segments = arc.GetSegmentCount();
+             for (int segment = 1; segment < segments; ++segment)
+             {
+                Float64 x, y;
+                arc.PointAtFraction(Float64(segment) / segments, x, y);
+                CComPtr<IPoint2d> point;
+                point.CoCreateInstance(CLSID_Point2d);
+                point->Move(x, y);
+                m_BXBProfile->Add(point);
+             }
+          }
       }
 
       Float64 Xltcl, Xrtcl;
