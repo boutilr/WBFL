@@ -29,6 +29,8 @@
 
 #include "resource.h"       // main symbols
 #include "ColumnLayout.h"
+#include <PointDefinedArc.h>
+#include <vector>
 
 /////////////////////////////////////////////////////////////////////////////
 // CPointDefinedCrossBeam
@@ -37,6 +39,7 @@ class ATL_NO_VTABLE CPointDefinedCrossBeam :
 	public CComCoClass<CPointDefinedCrossBeam, &CLSID_PointDefinedCrossBeam>,
 	public ISupportErrorInfo,
 	public IPointDefinedCrossBeam,
+   public IPointDefinedCrossBeam2,
    public IStructuredStorage2,
    public IObjectSafetyImpl<CPointDefinedCrossBeam,INTERFACESAFE_FOR_UNTRUSTED_CALLER | INTERFACESAFE_FOR_UNTRUSTED_DATA>
 {
@@ -61,17 +64,25 @@ BEGIN_COM_MAP(CPointDefinedCrossBeam)
 	COM_INTERFACE_ENTRY(ICrossBeam)
 	COM_INTERFACE_ENTRY(ILinearCrossBeam)
    COM_INTERFACE_ENTRY(IPointDefinedCrossBeam)
+   COM_INTERFACE_ENTRY(IPointDefinedCrossBeam2)
 	COM_INTERFACE_ENTRY(IStructuredStorage2)
    COM_INTERFACE_ENTRY(ISupportErrorInfo)
    COM_INTERFACE_ENTRY(IObjectSafety)
 END_COM_MAP()
 
 private:
-   IPier* m_pPier; // weak reference
+   IPier* m_pPier = nullptr; // weak reference
    Float64 m_H1L, m_H1R, m_HU;
    Float64 m_X1L, m_X1R;
    Float64 m_W1, m_W2;
    CComPtr<IPoint2dCollection> m_PierPoints;
+   struct TransitionData
+   {
+      CrossBeamTransition Type = cbtStraight;
+      Float64 Radius = 0;
+      WBFL::Geometry::PointDefinedArc Arc;
+   };
+   std::vector<TransitionData> m_Transitions;
    CComPtr<IRebarLayout> m_RebarLayout;
 
    bool m_bIsLXBDirty;
@@ -125,6 +136,11 @@ public:
    STDMETHOD(get_W2)(/*[out,retval]*/Float64* pW2) override;
 
    STDMETHOD(SetPoints)(/*[in]*/IPoint2dCollection* pPoints) override;
+
+// IPointDefinedCrossBeam2
+public:
+   STDMETHOD(SetTransition)(IndexType pointIdx, CrossBeamTransition transition, Float64 radius) override;
+   STDMETHOD(GetTransition)(IndexType pointIdx, CrossBeamTransition* transition, Float64* radius) override;
 
 // IStructuredStorage2
 public:

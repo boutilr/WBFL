@@ -1875,6 +1875,27 @@ library WBFLGenericBridge
 	   );
    }
 
+   typedef enum
+   {
+      cbtStraight = 0,
+      cbtArcUpward = 1,
+      cbtArcDownward = 2
+   } CrossBeamTransition;
+
+   [
+      object,
+      uuid(ED9C61D2-6312-4EF2-A455-0D597DC1708A),
+      oleautomation,
+      helpstring("IPointDefinedCrossBeam2 Interface"),
+      pointer_default(unique)
+   ]
+   interface IPointDefinedCrossBeam2 : IUnknown
+   {
+      // Connection from explicit point pointIdx to explicit point pointIdx + 1.
+      HRESULT SetTransition([in]IndexType pointIdx, [in]CrossBeamTransition transition, [in]Float64 radius);
+      HRESULT GetTransition([in]IndexType pointIdx, [out]CrossBeamTransition* transition, [out]Float64* radius);
+   }
+
    [
 		object,
 		uuid(DE9531F0-F6F2-4282-9DE2-EE9D78833D4E),
@@ -2876,6 +2897,7 @@ library WBFLGenericBridge
 	coclass PointDefinedCrossBeam
 	{
 		[default] interface IPointDefinedCrossBeam;
+      interface IPointDefinedCrossBeam2;
 	};
 	[
 		uuid(6AF46A10-C19E-438F-B69D-8AB743748CED),
