@@ -39,7 +39,6 @@ class ATL_NO_VTABLE CPointDefinedCrossBeam :
 	public CComCoClass<CPointDefinedCrossBeam, &CLSID_PointDefinedCrossBeam>,
 	public ISupportErrorInfo,
 	public IPointDefinedCrossBeam,
-   public IPointDefinedCrossBeam2,
    public IStructuredStorage2,
    public IObjectSafetyImpl<CPointDefinedCrossBeam,INTERFACESAFE_FOR_UNTRUSTED_CALLER | INTERFACESAFE_FOR_UNTRUSTED_DATA>
 {
@@ -64,7 +63,6 @@ BEGIN_COM_MAP(CPointDefinedCrossBeam)
 	COM_INTERFACE_ENTRY(ICrossBeam)
 	COM_INTERFACE_ENTRY(ILinearCrossBeam)
    COM_INTERFACE_ENTRY(IPointDefinedCrossBeam)
-   COM_INTERFACE_ENTRY(IPointDefinedCrossBeam2)
 	COM_INTERFACE_ENTRY(IStructuredStorage2)
    COM_INTERFACE_ENTRY(ISupportErrorInfo)
    COM_INTERFACE_ENTRY(IObjectSafety)
@@ -137,8 +135,6 @@ public:
 
    STDMETHOD(SetPoints)(/*[in]*/IPoint2dCollection* pPoints) override;
 
-// IPointDefinedCrossBeam2
-public:
    STDMETHOD(SetTransition)(IndexType pointIdx, CrossBeamTransition transition, Float64 radius) override;
    STDMETHOD(GetTransition)(IndexType pointIdx, CrossBeamTransition* transition, Float64* radius) override;
 

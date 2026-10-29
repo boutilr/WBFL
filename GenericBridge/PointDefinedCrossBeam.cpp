@@ -79,7 +79,6 @@ STDMETHODIMP CPointDefinedCrossBeam::InterfaceSupportsErrorInfo(REFIID riid)
 	{
 		&IID_ICrossBeam,
       &IID_IPointDefinedCrossBeam,
-      &IID_IPointDefinedCrossBeam2,
       &IID_IStructuredStorage2,
 	};
 	for (int i = 0; i < sizeof(arr) / sizeof(arr[0]); i++)
