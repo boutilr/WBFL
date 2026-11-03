@@ -51,6 +51,7 @@ namespace WBFL
                         SecondEditionWith2016Interims = 8,
                         ThirdEdition2018              = 9,
                         ThirdEditionWith2020Interims = 10,
+                        FourthEdition2026             = 11,
                         LastEdition
       };
 

@@ -117,6 +117,9 @@ LPCTSTR MBEManager::GetEditionAsString(MBEManager::Edition edition,bool bAbbrevi
    case Edition::ThirdEditionWith2020Interims:
       return (bAbbreviated ? _T("LRFR2020") : _T("Third Edition 2018, with 2020 interim provisions"));
 
+   case Edition::FourthEdition2026:
+      return (bAbbreviated ? _T("LRFR2026") : _T("Fourth Edition 2026"));
+
    case Edition::LastEdition:
       return GetEditionAsString(GetLatestEdition(), bAbbreviated);
 
@@ -168,6 +171,10 @@ MBEManager::Edition MBEManager::GetEdition(LPCTSTR strAbbrev)
    else if (strSpecVersion == _T("LRFR2020"))
    {
       return Edition::ThirdEditionWith2020Interims;
+   }
+   else if (strSpecVersion == _T("LRFR2026"))
+   {
+      return Edition::FourthEdition2026;
    }
    else
    {

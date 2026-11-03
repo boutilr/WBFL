@@ -26,7 +26,9 @@ namespace LrfdUnitTests
       {
          MBEAutoVersion av;
 
-         Assert::IsTrue(MBEManager::GetLatestEdition() == MBEManager::SetEdition(MBEManager::Edition::ThirdEdition2018));
+         Assert::IsTrue(MBEManager::Edition::FourthEdition2026 == MBEManager::GetLatestEdition());
+         MBEManager::SetEdition(MBEManager::GetLatestEdition());
+         Assert::IsTrue(MBEManager::Edition::FourthEdition2026 == MBEManager::SetEdition(MBEManager::Edition::ThirdEdition2018));
          Assert::IsTrue(MBEManager::Edition::ThirdEdition2018 == MBEManager::GetEdition());
       }
 
@@ -70,11 +72,14 @@ namespace LrfdUnitTests
          Assert::AreEqual(_T("LRFR2020"), MBEManager::GetEditionAsString(MBEManager::Edition::ThirdEditionWith2020Interims, true));
          Assert::AreEqual(_T("Third Edition 2018, with 2020 interim provisions"), MBEManager::GetEditionAsString(MBEManager::Edition::ThirdEditionWith2020Interims, false));
 
+         Assert::AreEqual(_T("LRFR2026"), MBEManager::GetEditionAsString(MBEManager::Edition::FourthEdition2026, true));
+         Assert::AreEqual(_T("Fourth Edition 2026"), MBEManager::GetEditionAsString(MBEManager::Edition::FourthEdition2026, false));
+
          // these will fail when new editions are added
          // this means more tests are required for the new editions and this test needs to be updated
          // for the new last version. also update the tests below
-         Assert::AreEqual(_T("LRFR2020"), MBEManager::GetEditionAsString(MBEManager::Edition::LastEdition, true));
-         Assert::AreEqual(_T("Third Edition 2018, with 2020 interim provisions"), MBEManager::GetEditionAsString(MBEManager::Edition::LastEdition, false));
+         Assert::AreEqual(_T("LRFR2026"), MBEManager::GetEditionAsString(MBEManager::Edition::LastEdition, true));
+         Assert::AreEqual(_T("Fourth Edition 2026"), MBEManager::GetEditionAsString(MBEManager::Edition::LastEdition, false));
 
          Assert::IsTrue(MBEManager::GetEdition(_T("LRFR2008")) == MBEManager::Edition::FirstEdition2008);
          Assert::IsTrue(MBEManager::GetEdition(_T("LRFR2010")) == MBEManager::Edition::FirstEditionWith2010Interims);
@@ -86,6 +91,8 @@ namespace LrfdUnitTests
          Assert::IsTrue(MBEManager::GetEdition(_T("LRFR2016")) == MBEManager::Edition::SecondEditionWith2016Interims);
          Assert::IsTrue(MBEManager::GetEdition(_T("LRFR2018")) == MBEManager::Edition::ThirdEdition2018);
          Assert::IsTrue(MBEManager::GetEdition(_T("LRFR2020")) == MBEManager::Edition::ThirdEditionWith2020Interims);
+
+         Assert::IsTrue(MBEManager::GetEdition(_T("LRFR2026")) == MBEManager::Edition::FourthEdition2026);
 
          Assert::ExpectException<std::invalid_argument>([]() {MBEManager::GetEdition(_T("BadVersion")); });
       }
