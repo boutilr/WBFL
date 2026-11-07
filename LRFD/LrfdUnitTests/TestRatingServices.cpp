@@ -38,5 +38,20 @@ namespace LrfdUnitTests
             RatingSolver::Solve([](Float64) { return (std::numeric_limits<Float64>::quiet_NaN)(); });
          });
       }
+
+      TEST_METHOD(ReducedDemandMinimumReinforcement)
+      {
+         Float64 k = MBERating::GetReducedDemandMinimumReinforcementFactor(500.0, 1000.0, 1.0);
+         Assert::AreEqual(1.0 / std::sqrt(1.33), k, 1e-6);
+         Assert::AreEqual(k, MBERating::GetReducedDemandMinimumReinforcementFactor(-500.0, -1000.0, 1.0), 1e-6);
+         Assert::AreEqual(500.0 / 550.0, MBERating::GetReducedDemandMinimumReinforcementFactor(500.0, 550.0, 1.0), 1e-6);
+         Assert::AreEqual(1.0 / std::sqrt(1.33 * 0.85), MBERating::GetReducedDemandMinimumReinforcementFactor(500.0, 1000.0, 0.85), 1e-6);
+         Assert::AreEqual(1.0, MBERating::GetReducedDemandMinimumReinforcementFactor(1000.0, 500.0, 1.0));
+         Assert::AreEqual(0.0, MBERating::GetReducedDemandMinimumReinforcementFactor(0.0, 1000.0, 1.0));
+         Assert::AreEqual(1.0, MBERating::GetReducedDemandMinimumReinforcementFactor(-500.0, 1000.0, 1.0));
+         Assert::ExpectException<std::invalid_argument>([] {
+            MBERating::GetReducedDemandMinimumReinforcementFactor(500.0, 1000.0, 0.0);
+         });
+      }
    };
 }
