@@ -347,6 +347,22 @@ STDMETHODIMP CVehicularAnalysisContext::get_IsPOIInNegativeLiveLoadMomentZone(Po
    return m_pLiveLoadNegativeMomentRegion->get_IsPOIInNegativeLiveLoadMomentZone( poiID, stage, isInZone);
 }
 
+STDMETHODIMP CVehicularAnalysisContext::ComputeContraflexureLocations(BSTR stage, IDblArray** locations)
+{
+   CComQIPtr<IContraflexureResponse> response(m_pLiveLoadNegativeMomentRegion);
+   return response ? response->ComputeContraflexureLocations(stage, locations) : E_NOINTERFACE;
+}
+STDMETHODIMP CVehicularAnalysisContext::ComputeContraflexureResponse(BSTR stage, ForceEffectType effect, IInfluenceLine** results)
+{
+   CComQIPtr<IContraflexureResponse> response(m_pLiveLoadNegativeMomentRegion);
+   return response ? response->ComputeContraflexureResponse(stage, effect, results) : E_NOINTERFACE;
+}
+STDMETHODIMP CVehicularAnalysisContext::get_IsPOIInContraflexureZone(PoiIDType poi, BSTR stage, InZoneType* zone)
+{
+   CComQIPtr<IContraflexureResponse> response(m_pLiveLoadNegativeMomentRegion);
+   return response ? response->get_IsPOIInContraflexureZone(poi, stage, zone) : E_NOINTERFACE;
+}
+
 STDMETHODIMP CVehicularAnalysisContext::ComputeNegativeMomentRegions(BSTR stage, IDblArray* *locations)
 {
    return m_pLiveLoadNegativeMomentRegion->ComputeNegativeMomentRegions( stage, locations);

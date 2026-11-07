@@ -26,6 +26,7 @@
 #include <Float.h>
 
 #include "WBFLLBAMLiveLoader.h"
+#include "PermitLaneApplicability.h"
 #include "BruteForceVehicularResponse2.h"
 #include "LiveLoadModelSectionResults.h"
 #include "LiveLoadModelResults.h"
@@ -1114,7 +1115,10 @@ void CBruteForceVehicularResponse2::ComputeInflResponse(PoiIDType poiID,LiveLoad
          Float64 area;
          hr = inflLine->ComputeArea(lane_side, &area);
 
-         if (m_IsLane)
+         bool applyLane = m_LiveLoadApplicability != llaMBE4PermitLane ||
+            MBE4PermitLaneApplies(m_SupportLocations, m_LiveLoadNegativeMomentRegion, inflLine,
+               m_CachedStage, effect, m_RealOptimization, side == ssRight, m_bComputingReaction, m_pApplicabilityStrategy->IsForce());
+         if (m_IsLane && applyLane)
          {
             lane_result += m_LaneLoad * area;
          }

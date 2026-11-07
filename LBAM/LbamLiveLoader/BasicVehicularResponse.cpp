@@ -28,6 +28,7 @@
 #include "LBAMLiveLoader.hh"
 #include "Truck.h"
 #include "LiveLoaderUtils.h"
+#include "PermitLaneApplicability.h"
 
 #include <vector>
 
@@ -818,6 +819,24 @@ HRESULT CBasicVehicularResponse::ComputeResponse(IIDArray* POIs, BSTR stage,
                      rgt_sidewalk_resp_fy = sidewalk_load * rgt_fy_area;
                      rgt_sidewalk_resp_mz = sidewalk_load * rgt_mz_area;
                   }
+               }
+
+               if (llapplicability == llaMBE4PermitLane)
+               {
+                  // Reaction strategies use support influence lines in the same
+                  // section-result container. Their ids need not be POI ids.
+                  bool reaction = m_ApplicabilityStrategy->IsReaction();
+                  IInfluenceLine* leftInfluence = optimized_effect == fetFx ? fx_lft_inf.p :
+                     (optimized_effect == fetFy ? fy_lft_inf.p : mz_lft_inf.p);
+                  IInfluenceLine* rightInfluence = optimized_effect == fetFx ? fx_rgt_inf.p :
+                     (optimized_effect == fetFy ? fy_rgt_inf.p : mz_rgt_inf.p);
+                  if (!rightInfluence) rightInfluence = leftInfluence;
+                  if (!MBE4PermitLaneApplies(m_SupportLocations, m_LiveLoadNegativeMomentRegion, leftInfluence,
+                     stage, optimized_effect, optimization, false, reaction, m_ApplicabilityStrategy->IsForce()))
+                     lft_lane_resp_fx = lft_lane_resp_fy = lft_lane_resp_mz = 0.0;
+                  if (!MBE4PermitLaneApplies(m_SupportLocations, m_LiveLoadNegativeMomentRegion, rightInfluence,
+                     stage, optimized_effect, optimization, true, reaction, m_ApplicabilityStrategy->IsForce()))
+                     rgt_lane_resp_fx = rgt_lane_resp_fy = rgt_lane_resp_mz = 0.0;
                }
 
                // combine truck and lane response - both responses are already factored at this point
