@@ -123,6 +123,7 @@
     <ClCompile Include="TestLRFDConcreteBase.cpp" />
     <ClCompile Include="TestLRFDTimeDependentConcrete.cpp" />
     <ClCompile Include="TestMBEManager.cpp" />
+    <ClCompile Include="TestRatingServices.cpp" />
     <ClCompile Include="TestMBEManagerListener.cpp" />
     <ClCompile Include="TestLumpSumLosses.cpp" />
     <ClCompile Include="TestNoncompositeApproximateLosses2005.cpp" />

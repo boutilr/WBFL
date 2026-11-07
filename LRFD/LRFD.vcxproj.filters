@@ -58,6 +58,12 @@
     <ClCompile Include="MBEManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RatingSolver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MBERating.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="MBEManagerListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -217,6 +223,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Include\LRFD\MBEManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\LRFD\RatingSolver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\LRFD\MBERating.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Include\LRFD\MBEManagerListener.h">

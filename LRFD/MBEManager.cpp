@@ -26,6 +26,7 @@
 #include <Lrfd/MBEManager.h>
 #include <Lrfd/MBEManagerListener.h>
 #include <algorithm>
+#include <stdexcept>
 
 using namespace WBFL::LRFD;
 
@@ -34,7 +35,6 @@ MBEManager::Edition MBEManager::ms_Edition = MBEManager::GetLatestEdition();
 bool MBEManager::ms_IsDamaged = false;
 
 MBEManager::Listeners MBEManager::ms_Listeners;
-
 
 void MBEManager::BeginDamage()
 {

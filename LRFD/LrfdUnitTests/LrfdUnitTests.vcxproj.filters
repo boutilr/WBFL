@@ -159,6 +159,9 @@
     <ClCompile Include="TestMBEManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestRatingServices.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="TestMBEManagerListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

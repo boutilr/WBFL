@@ -1,4 +1,7 @@
 #include "pch.h"
+#include <stdexcept>
+#include <cmath>
+#include <LRFD/Shear.h>
 #include "CppUnitTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -10,6 +13,17 @@ namespace LrfdUnitTests
 	{
 	public:
 		
+
+      TEST_METHOD(LongitudinalShearDemand)
+      {
+         Float64 theta = std::acos(-1.0) / 4.0;
+         Assert::AreEqual(90.0, Shear::LongitudinalShearDemand(100, 20, 40, 2, 1, 1, 1, 0, 20, theta), 1e-10);
+         // Negative moment/shear, axial compression and the stirrup cap.
+         Assert::AreEqual(60.0, Shear::LongitudinalShearDemand(-100, -20, -40, 2, 1, 1, 1, 0, 200, theta), 1e-10);
+         Assert::ExpectException<std::invalid_argument>([theta] {
+            Shear::LongitudinalShearDemand(1, 0, 1, 0, 1, 1, 1, 0, 0, theta);
+         });
+      }
 		TEST_METHOD(ShearStress)
 		{
 			BDSAutoVersion av;

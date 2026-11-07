@@ -211,6 +211,8 @@
     <ClCompile Include="LRFDConcreteBase.cpp" />
     <ClCompile Include="LRFDTimeDependentConcrete.cpp" />
     <ClCompile Include="MBEManager.cpp" />
+    <ClCompile Include="RatingSolver.cpp" />
+    <ClCompile Include="MBERating.cpp" />
     <ClCompile Include="MBEManagerListener.cpp" />
     <ClCompile Include="LumpSumLosses.cpp" />
     <ClCompile Include="main.cpp">
@@ -270,6 +272,8 @@
     <ClInclude Include="..\Include\LRFD\LRFDTimeDependentConcrete.h" />
     <ClInclude Include="..\Include\LRFD\LrfdTypes.h" />
     <ClInclude Include="..\Include\LRFD\MBEManager.h" />
+    <ClInclude Include="..\Include\LRFD\RatingSolver.h" />
+    <ClInclude Include="..\Include\LRFD\MBERating.h" />
     <ClInclude Include="..\Include\LRFD\MBEManagerListener.h" />
     <ClInclude Include="..\Include\LRFD\LumpSumLosses.h" />
     <ClInclude Include="..\Include\LRFD\NoncompositeApproximateLosses2005.h" />
