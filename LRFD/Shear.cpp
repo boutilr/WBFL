@@ -30,6 +30,7 @@
 #include <Lrfd\XShear.h>
 #include <Lrfd\XCodeVersion.h>
 #include <Lrfd/BDSManager.h>
+#include <Lrfd/MBEManager.h>
 #include <MathEx.h>
 #include <Units\Units.h>
 #include <GeomModel/GeomModel.h>
@@ -55,7 +56,7 @@ void compute_theta_and_beta3(ShearData* pData,bool bWSDOT);
 void compute_theta_and_beta3_tbl1(ShearData* pData,bool bWSDOT);
 void compute_theta_and_beta3_tbl2(ShearData* pData,bool bWSDOT);
 void compute_theta_and_beta4(ShearData* pData); // WSDOT method per June 18, 2001 Design Memo (7-2001)
-void compute_theta_and_beta5(ShearData* pData);
+void compute_theta_and_beta5(ShearData* pData, bool rating = false, bool uncracked = false, bool neglectPrestressSizeEffect = true);
 Float64 compute_strain(ShearData* pData,Float64 theta);
 Float64 get_theta(Float64 vfc,Float64 ex);
 Float64 get_beta(Float64 vfc,Float64 ex);
@@ -305,6 +306,14 @@ void Shear::ComputeThetaAndBeta(ShearData* pData, Shear::Method method )
 //   {
 //      compute_theta_and_beta2( pData );
 //   }
+}
+
+void Shear::ComputeRatingThetaAndBeta(ShearData* pData, bool uncracked,
+   bool useZeroStrain, bool neglectPrestressSizeEffect)
+{
+   PRECONDITION(BDSManager::Edition::FourthEdition2007 < BDSManager::GetEdition());
+   compute_theta_and_beta5(pData, MBEManager::Edition::FourthEdition2026 <= MBEManager::GetEdition(),
+      uncracked && useZeroStrain, neglectPrestressSizeEffect);
 }
 
 void Shear::ComputeVciVcw(ShearData* pData)
@@ -1370,7 +1379,7 @@ void compute_theta_and_beta4(ShearData* pData)
    }
 }
 
-void compute_theta_and_beta5(ShearData* pData)
+void compute_theta_and_beta5(ShearData* pData, bool rating, bool uncracked, bool neglectPrestressSizeEffect)
 {
    // LRFD 2008 - Beta and Theta by equations
 
@@ -1431,6 +1440,11 @@ void compute_theta_and_beta5(ShearData* pData)
    }
 
    ex_calc = ForceIntoRange(ex_min,ex_calc,ex_max);
+   if (rating && uncracked)
+   {
+      // MBE 4 6A.5.8: strain may be zero in an uncracked region.
+      ex_calc = 0.0;
+   }
 
 
    // Get Beta/Theta;
@@ -1446,7 +1460,11 @@ void compute_theta_and_beta5(ShearData* pData)
       minSteel = WBFL::Units::ConvertToSysUnits(minSteel,WBFL::Units::Measure::Inch); // (in^2/in)
    }
 
-   if ( Avs < minSteel && !pData->bIgnoreMiniumStirrupRequirementForBeta)
+   // MBE 4 6A.5.8: sufficient prestress permits neglecting the size effect,
+   // regardless of stirrup quantity. This exception does not apply to RC.
+   bool omitRatingSizeEffect = rating && neglectPrestressSizeEffect && 0.0 < fc && 0.02 * fc <= pData->fpc &&
+      (0.0 < Aps || 0.0 < AptSegment || 0.0 < AptGirder);
+   if ( Avs < minSteel && !pData->bIgnoreMiniumStirrupRequirementForBeta && !omitRatingSizeEffect)
    {
       pData->BetaEqn = 2; // Use LRFD Eqn 5.8.3.4.2-2
 

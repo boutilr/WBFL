@@ -137,6 +137,13 @@ namespace WBFL
          static void ComputeThetaAndBeta(ShearData* pData, Method method = Method::Tables);
 
 
+         /// @brief Computes the equation-based MCFT factors with MBE 4 Article 6A.5.8
+         /// rating allowances. uncracked means the actual moment is below Mcr.
+         /// Project options independently enable zero strain and the prestress size-effect allowance.
+         /// Earlier MBE editions retain the LRFD equation-based calculation.
+         static void ComputeRatingThetaAndBeta(ShearData* pData, bool uncracked,
+            bool useZeroStrain = true, bool neglectPrestressSizeEffect = true);
+
          /// @brief Computes Vci and Vcw per LRFD 4th edition 2007
          static void ComputeVciVcw(ShearData* pData);
 

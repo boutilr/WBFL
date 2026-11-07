@@ -156,6 +156,66 @@ namespace LrfdUnitTests
 		}
 
 
+      TEST_METHOD(MBE4RatingAllowances)
+      {
+         WBFL::Units::AutoSystem au;
+         WBFL::Units::System::SetMassUnit(WBFL::Units::Measure::_12KSlug);
+         WBFL::Units::System::SetLengthUnit(WBFL::Units::Measure::Inch);
+         WBFL::Units::System::SetAngleUnit(WBFL::Units::Measure::Radian);
+         BDSAutoVersion av;
+         MBEAutoVersion mv;
+         BDSManager::SetEdition(BDSManager::Edition::TenthEdition2024);
+         MBEManager::SetEdition(MBEManager::Edition::FourthEdition2026);
+         ShearData data;
+         data.Mu = 500; data.Vu = 50; data.phi = 0.9;
+         data.dv = 48; data.bv = 6; data.Es = 29000; data.As = 2;
+         data.Eps = 28500; data.Aps = 6; data.fc = 7; data.fy = 60;
+         data.sx = 48; data.ag = 0.75; data.AvS = 0;
+         data.fpc = 0.02 * data.fc;
+         Shear::ComputeRatingThetaAndBeta(&data, true);
+         Assert::AreEqual(0.0, data.ex);
+         Assert::AreEqual(4.8, data.Beta, 1e-10);
+         Assert::AreEqual(WBFL::Units::ConvertToSysUnits(29.0, WBFL::Units::Measure::Degree), data.Theta, 1e-10);
+         ShearData noAllowance(data);
+         ShearData ordinary(data);
+         Shear::ComputeRatingThetaAndBeta(&noAllowance, true, false, false);
+         Shear::ComputeThetaAndBeta(&ordinary, Shear::Method::Equations);
+         Assert::AreEqual(ordinary.ex, noAllowance.ex);
+         Assert::AreEqual(ordinary.Theta, noAllowance.Theta);
+         Assert::AreEqual(ordinary.Beta, noAllowance.Beta);
+         ShearData sizeOnly(data);
+         Shear::ComputeRatingThetaAndBeta(&sizeOnly, true, false, true);
+         Assert::AreEqual(ordinary.ex, sizeOnly.ex);
+         Assert::AreEqual((Int16)1, sizeOnly.BetaEqn);
+         ShearData strainOnly(data);
+         Shear::ComputeRatingThetaAndBeta(&strainOnly, true, true, false);
+         Assert::AreEqual(0.0, strainOnly.ex);
+         Assert::IsTrue(strainOnly.Beta < 4.8);
+         data.fpc = 0.0199 * data.fc;
+         Shear::ComputeRatingThetaAndBeta(&data, true);
+         Assert::IsTrue(data.Beta < 4.8);
+         data.fpc = 0.02 * data.fc;
+         Shear::ComputeRatingThetaAndBeta(&data, false);
+         Assert::IsTrue(0.0 < data.ex); // cracked sections retain the computed strain
+         Assert::AreEqual((Int16)1, data.BetaEqn); // prestress exception also applies when cracked
+         ShearData crackedDesign(data);
+         Shear::ComputeThetaAndBeta(&crackedDesign, Shear::Method::Equations);
+         Assert::IsTrue(crackedDesign.Beta < data.Beta); // design retains the size effect
+         data.Aps = 0; data.AptGirder = 6; data.EptGirder = 28500;
+         Shear::ComputeRatingThetaAndBeta(&data, true);
+         Assert::AreEqual(4.8, data.Beta, 1e-10); // post-tensioning also qualifies
+         data.AptGirder = 0;
+         Shear::ComputeRatingThetaAndBeta(&data, true);
+         Assert::IsTrue(data.Beta < 4.8); // prestress exception cannot apply to RC
+         MBEManager::SetEdition(MBEManager::Edition::ThirdEditionWith2020Interims);
+         ShearData design(data);
+         Shear::ComputeThetaAndBeta(&design, Shear::Method::Equations);
+         Shear::ComputeRatingThetaAndBeta(&data, true);
+         Assert::AreEqual(design.ex, data.ex);
+         Assert::AreEqual(design.Beta, data.Beta);
+         Assert::AreEqual(design.Theta, data.Theta);
+      }
+
 		TEST_METHOD(BetaTheta_WSDOT)
 		{
 			// LRFD Shear 2001 Interims, modified by WSDOT Design Memo 7-2001... Dated June 18, 2001
