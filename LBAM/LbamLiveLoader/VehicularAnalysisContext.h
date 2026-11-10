@@ -41,7 +41,8 @@ class ATL_NO_VTABLE CVehicularAnalysisContext :
 	public IVehicularAnalysisContext,
 	public ISupportLocations, 
 	public IInfluenceLineResponse,
-	public ILiveLoadNegativeMomentRegion, 
+	public ILiveLoadNegativeMomentRegion,
+   public IContraflexureResponse,
 	public IAnalysisPOIs, 
 	public IGetDistributionFactors,
 	public IGetStressPoints, 
@@ -68,6 +69,7 @@ BEGIN_COM_MAP(CVehicularAnalysisContext)
 	COM_INTERFACE_ENTRY(ISupportLocations)
 	COM_INTERFACE_ENTRY(IInfluenceLineResponse)
 	COM_INTERFACE_ENTRY(ILiveLoadNegativeMomentRegion)
+   COM_INTERFACE_ENTRY(IContraflexureResponse)
 	COM_INTERFACE_ENTRY(IAnalysisPOIs)
 	COM_INTERFACE_ENTRY(IGetDistributionFactors)
 	COM_INTERFACE_ENTRY(IGetStressPoints)
@@ -109,6 +111,11 @@ public:
    STDMETHOD(ComputeSupportDeflectionInfluenceLine)(/*[in]*/SupportIDType supportID, /*[in]*/BSTR stage, /*[in]*/ForceEffectType deflectionEffect, /*[out,retval]*/ IInfluenceLine** newVal) override;
 	STDMETHOD(GetZeroTolerance)(/*[out]*/Float64* forceTolerance, /*[out]*/Float64* deflectionTolerance) override;
 	STDMETHOD(SetZeroTolerance)(/*[in]*/Float64 forceTolerance, /*[in]*/Float64 deflectionTolerance) override;
+
+// IContraflexureResponse
+   STDMETHOD(ComputeContraflexureLocations)(BSTR stage, IDblArray** locations) override;
+   STDMETHOD(ComputeContraflexureResponse)(BSTR stage, ForceEffectType effect, IInfluenceLine** results) override;
+   STDMETHOD(get_IsPOIInContraflexureZone)(PoiIDType poi, BSTR stage, InZoneType* zone) override;
 
 // ILiveLoadNegativeMomentRegion
    STDMETHOD(get_IsPOIInNegativeLiveLoadMomentZone)(/*[in]*/PoiIDType poiID, /*[in]*/BSTR stage, /*[out,retval]*/InZoneType* isInZone) override;

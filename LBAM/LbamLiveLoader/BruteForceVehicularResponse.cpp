@@ -646,7 +646,7 @@ HRESULT CBruteForceVehicularResponse::ComputeResponse(IIDArray* poiIDs, BSTR sta
                   }
 
                   ComputeInflResponse(type, vehicleIndex, effect, loc_optimization, vehConfiguration, doApplyImpact, vbComputePlacements, 
-                                      rgt_infl_line, &left_result, &right_result, left_config, right_config);
+                                      rgt_infl_line, &left_result, &right_result, left_config, right_config, true);
 
                   if (vbComputePlacements == VARIANT_TRUE)
                   {
@@ -694,7 +694,7 @@ HRESULT CBruteForceVehicularResponse::ComputeResponse(IIDArray* poiIDs, BSTR sta
                   }
 
                   ComputeInflResponse(type, vehicleIndex, effect, loc_optimization, vehConfiguration, doApplyImpact, vbComputePlacements, 
-                                      rgt_infl_line, &bog_left_result, &right_result, bog_left_config, right_config);
+                                      rgt_infl_line, &bog_left_result, &right_result, bog_left_config, right_config, true);
 
                   if (vbComputePlacements == VARIANT_TRUE)
                   {  
@@ -771,7 +771,7 @@ void CBruteForceVehicularResponse::ComputeInflResponse(LiveLoadModelType type, V
                                                        VehicularLoadConfigurationType vehConfiguration, VARIANT_BOOL doApplyImpact,
                                                        VARIANT_BOOL computePlacements, IInfluenceLine* inflLine, 
                                                        Float64* leftResult, Float64 *rightResult, 
-                                                       ILiveLoadConfiguration* leftConfig, ILiveLoadConfiguration* rightConfig)
+                                                       ILiveLoadConfiguration* leftConfig, ILiveLoadConfiguration* rightConfig, bool rightFace)
 {
    CHRException hr;
 
@@ -907,7 +907,17 @@ void CBruteForceVehicularResponse::ComputeInflResponse(LiveLoadModelType type, V
          Float64 area;
          hr = inflLine->ComputeArea(lane_side, &area);
 
-         if (m_IsLane)
+         bool applyLane = true;
+         if (m_LiveLoadApplicability == llaMBE4PermitLane)
+         {
+            auto originalOptimization = optimization;
+            if (rightFace && m_InflStrategy->SignFlip() == -1.0)
+               originalOptimization = optimization == optMaximize ? optMinimize : optMaximize;
+            bool reaction = m_ApplicabilityStrategy->IsReaction();
+            applyLane = MBE4PermitLaneApplies(m_SupportLocations, m_LiveLoadNegativeMomentRegion, inflLine,
+               m_CachedStage, effect, originalOptimization, rightFace, reaction, m_ApplicabilityStrategy->IsForce());
+         }
+         if (m_IsLane && applyLane)
          {
             lane_result = m_LaneLoad * area;
          }

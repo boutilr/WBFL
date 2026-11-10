@@ -169,6 +169,7 @@ void FixedTruck::Initialize(IVehicularLoad* pVehicularLoad, bool applyImpact, IL
    switch( applicability )
    {
    case llaEntireStructure:
+   case llaMBE4PermitLane:
       m_bNegMomentsAndReactions = false;
       break;
 

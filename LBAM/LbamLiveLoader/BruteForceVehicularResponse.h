@@ -30,6 +30,7 @@
 #include "Truck.h"
 #include <algorithm>
 #include "LiveLoaderUtils.h"
+#include "PermitLaneApplicability.h"
 #include "ComputeInfluenceLineStrategy.h"
 #include "DistributionFactorStrategy.h"
 #include "LLApplicabilityStrategy.h"
@@ -147,7 +148,7 @@ private:
                             VehicularLoadConfigurationType vehConfiguration, VARIANT_BOOL doApplyImpact, VARIANT_BOOL computePlacements,
                             IInfluenceLine* inflLine, 
                             Float64* leftResult, Float64 *rightResult, 
-                            ILiveLoadConfiguration* leftConfig, ILiveLoadConfiguration* rightConfig);
+                            ILiveLoadConfiguration* leftConfig, ILiveLoadConfiguration* rightConfig, bool rightFace = false);
 
    void AssertValid();
 

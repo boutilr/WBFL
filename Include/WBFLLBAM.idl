@@ -218,7 +218,8 @@ library WBFLLBAM
    {
 		llaEntireStructure = 1,
 		llaContraflexure   = 2,
-      llaNegMomentAndInteriorPierReaction = 3 // similar to llaContraflexure, but not limited to between points of contraflexure
+      llaNegMomentAndInteriorPierReaction = 3, // not limited to between points of contraflexure
+      llaMBE4PermitLane = 4 // truck everywhere; accompanying lane by MBE 4 6A.4.5.4.1
    } LiveLoadApplicabilityType;
 
    typedef

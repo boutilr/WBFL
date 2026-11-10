@@ -45,6 +45,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="PermitLaneApplicability.h" />
     <ClInclude Include="BasicVehicularResponse.h">
       <Filter>Header Files</Filter>
     </ClInclude>

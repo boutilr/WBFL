@@ -30,6 +30,8 @@ enum ApplicabilityLoc {appNone=0, appRight=1, appLeft=2, appBoth=3}; // meant to
 class iLLApplicabilityStrategy
 {
 public:
+   virtual bool IsReaction() const { return false; }
+   virtual bool IsForce() const { return false; }
    virtual ApplicabilityLoc GetApplicability(PoiIDType poiId, BSTR stage,  
                                           VARIANT_BOOL isApplicable, LiveLoadApplicabilityType llapplicability, 
                                           ForceEffectType optimizedEffect, OptimizationType optimization) = 0;
@@ -41,6 +43,7 @@ public:
 class ForceLLApplicabilityStrategy: public iLLApplicabilityStrategy
 {
 public:
+   bool IsForce() const override { return true; }
    ForceLLApplicabilityStrategy(ILiveLoadNegativeMomentRegion* llnmr):
    m_LiveLoadNegativeMomentRegion(llnmr)
    {;}
@@ -54,7 +57,7 @@ public:
          // placement is not applicable
          return appNone;
       }
-      else if (llapplicability==llaEntireStructure)
+      else if ((llapplicability==llaEntireStructure || llapplicability==llaMBE4PermitLane))
       {
          return appBoth;
       }
@@ -107,7 +110,7 @@ public:
          // placement is not applicable
          return appNone;
       }
-      else if (llapplicability==llaEntireStructure)
+      else if ((llapplicability==llaEntireStructure || llapplicability==llaMBE4PermitLane))
       {
          return appBoth;
       }
@@ -124,6 +127,7 @@ public:
 class ReactionLLApplicabilityStrategy: public iLLApplicabilityStrategy
 {
 public:
+   bool IsReaction() const override { return true; }
    ReactionLLApplicabilityStrategy(ISupportLocations* supportlocs):
    m_SupportLocations(supportlocs)
    {;}
@@ -137,7 +141,7 @@ public:
          // placement is not applicable
          return appNone;
       }
-      else if (llapplicability==llaEntireStructure)
+      else if ((llapplicability==llaEntireStructure || llapplicability==llaMBE4PermitLane))
       {
          return appBoth;
       }

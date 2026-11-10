@@ -273,6 +273,7 @@ copy %(FullPath) $(ProjectDir)..\htmlhelp\LbamLiveLoader.hh
     <ClInclude Include="LiveLoadModelSectionResults.h" />
     <ClInclude Include="LiveLoadModelStressResults.h" />
     <ClInclude Include="LLApplicabilityStrategy.h" />
+    <ClInclude Include="PermitLaneApplicability.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Truck.h" />

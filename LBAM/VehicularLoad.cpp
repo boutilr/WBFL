@@ -149,7 +149,7 @@ STDMETHODIMP CVehicularLoad::get_Applicability(LiveLoadApplicabilityType *pVal)
 
 STDMETHODIMP CVehicularLoad::put_Applicability(LiveLoadApplicabilityType newVal)
 {
-   if ( (int)newVal<llaEntireStructure || (int)newVal>llaNegMomentAndInteriorPierReaction )
+   if ( (int)newVal<llaEntireStructure || (int)newVal>llaMBE4PermitLane )
       return E_INVALIDARG;
 
 	if (newVal != m_LiveLoadApplicability)
@@ -425,6 +425,8 @@ STDMETHODIMP CVehicularLoad::Load(IStructuredLoad2 * pload)
          m_LiveLoadApplicability = llaContraflexure;
       else if (lc == llaNegMomentAndInteriorPierReaction)
          m_LiveLoadApplicability = llaNegMomentAndInteriorPierReaction;
+      else if (lc == llaMBE4PermitLane)
+         m_LiveLoadApplicability = llaMBE4PermitLane;
       else
       {
          ATLASSERT(false);
