@@ -43,6 +43,16 @@ namespace WBFL
          /// @param refinedLosses Uses LRFD 5.9.3.4 refined time-dependent losses.
          /// @param elasticGain Takes advantage of elastic gain.
          static Float64 GetServiceIIIInventoryLiveLoadFactor(bool refinedLosses, bool elasticGain);
+
+         /// @brief Iterates the minimum-reinforcement factor at balanced demand (MBE C6A.5.6).
+         /// Solves K = min(1, Mr/min(crackingLimit, 1.33*Mu)) with
+         /// Mu = resistanceModifier*Mr*K. Returns the passing side of the solution.
+         /// @param mr Signed flexural resistance phi*Mn, before the K reduction.
+         /// @param crackingLimit Signed cracking-moment limit from the minimum-reinforcement check.
+         /// @param resistanceModifier Product of condition and system factors, including its lower bound.
+         /// Callers apply this allowance only to applicable Fourth Edition ratings below 1.0.
+         static Float64 GetReducedDemandMinimumReinforcementFactor(Float64 mr, Float64 crackingLimit,
+            Float64 resistanceModifier);
       };
    };
 };
