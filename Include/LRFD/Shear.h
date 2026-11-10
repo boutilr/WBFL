@@ -118,6 +118,11 @@ namespace WBFL
       class LRFDCLASS Shear
       {
       public:
+         /// @brief LRFD 5.7.3.5-1 longitudinal tension demand, used by MBE 6A.5.8.
+         /// Axial tension is positive; theta is in radians. All effects must be concurrent.
+         static Float64 LongitudinalShearDemand(Float64 moment, Float64 axial, Float64 shear,
+            Float64 dv, Float64 phiM, Float64 phiN, Float64 phiV, Float64 vp, Float64 vs, Float64 theta);
+
          enum class Method { Tables, Equations };
 
          Shear() = delete;

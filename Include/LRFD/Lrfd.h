@@ -31,6 +31,8 @@
 #endif
 
 #include <Lrfd\LrfdTypes.h>
+#include <Lrfd/RatingSolver.h>
+#include <Lrfd/MBERating.h>
 #include <LRFD\AutoVersion.h>
 #include <LRFD\Details.h>
 #include <LRFD\ConcreteUtil.h>

@@ -23,6 +23,9 @@
 ///////////////////////////////////////////////////////////////////////
 
 #include <Lrfd\LrfdLib.h>
+#include <stdexcept>
+#include <cmath>
+#include <algorithm>
 #include <Lrfd\Shear.h>
 #include <Lrfd\XShear.h>
 #include <Lrfd\XCodeVersion.h>
@@ -32,6 +35,17 @@
 #include <GeomModel/GeomModel.h>
 
 using namespace WBFL::LRFD;
+
+Float64 Shear::LongitudinalShearDemand(Float64 moment, Float64 axial, Float64 shear,
+   Float64 dv, Float64 phiM, Float64 phiN, Float64 phiV, Float64 vp, Float64 vs, Float64 theta)
+{
+   if (dv <= 0 || phiM <= 0 || phiN <= 0 || phiV <= 0 || theta <= 0 || theta >= 1.5707963267948966)
+      throw std::invalid_argument("Invalid longitudinal shear rating parameters");
+   // LRFD limits the stirrup contribution to the shear demand divided by phi.
+   Float64 stirrup = (std::min)((std::max)(0.0, vs), std::fabs(shear) / phiV);
+   return std::fabs(moment) / (dv * phiM) + 0.5 * axial / phiN +
+      (std::fabs(shear / phiV - vp) - 0.5 * stirrup) / std::tan(theta);
+}
 
 
 // Helper functions
